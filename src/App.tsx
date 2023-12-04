@@ -5,10 +5,11 @@ import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik';
 import './styles.css';
 
 const baseURL = 'https://abzagency-test-production.up.railway.app/api/v1';
-// const baseURL = 'http://localhost:3000/api/v1';
 
 const TOKEN_ERROR_MESSAGE =
   'Cannot authorize to create user please try again and verify your internet connection';
+
+const USER_PHOTO_KEY = 'photo';
 
 type User = {
   id: string;
@@ -200,7 +201,7 @@ export default function App() {
     } catch (error: any) {
       const { status } = error.response;
       const { success, fails } = error.response.data;
-      if (status === 422 && !success && fails) {
+      if (!success && fails) {
         const { fails } = error.response.data as ResponseValidationError;
 
         for (const [key, value] of Object.entries(fails)) {
@@ -280,9 +281,13 @@ export default function App() {
         {users.map(user => (
           <li key={user.id} className="users-list">
             <h3>{user.name}</h3>
-            {Object.entries(user).map(([key, value]) => (
-              <p key={key} className="users-prop">{`${key}: ${value}`}</p>
-            ))}
+            {Object.entries(user).map(([key, value]) =>
+              key === USER_PHOTO_KEY && typeof value === 'string' ? (
+                <img key={key} src={value} alt="image"></img>
+              ) : (
+                <p key={key} className="users-prop">{`${key}: ${value}`}</p>
+              ),
+            )}
           </li>
         ))}
       </ul>
